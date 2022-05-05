@@ -1,0 +1,18 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 20220418-creating-user
+      author: jose.luiz
+      changes:
+      - sqlFile:
+            encoding: utf8
+            path: sqls/20220418-creating-user.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: 20220418-creating-tables
+      author: jose.luiz
+      changes:
+      - sqlFile:
+            encoding: utf8
+            path: sqls/20220418-creating-tables.sql
+            relativeToChangelogFile: true

@@ -27,6 +27,3 @@ TODO: Projeto para Avalição para a vaga de Dev SR na NT Consult.
    1. no terminar acessar {CANMINHO_DO_PROJETO}/desafio-java/devops
       1. `docker build -t desafio_java .` para gerar o container doker da aplicação
       2. `docker run desafio_java` para executar o container docker
-
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 

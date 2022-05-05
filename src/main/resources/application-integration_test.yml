@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+scheduled:
+  cron: 0 0 * * * *
+
+spring:
+  datasource:
+    driver: org.postgresql.postgresql
+    url: jdbc:postgresql://localhost:5432/desafio_globo?stringtype=unspecified
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        use_sql_comments: false
+        format_sql: true
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect

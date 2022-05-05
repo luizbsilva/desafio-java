@@ -1,0 +1,138 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'com.gorylenko.gradle-git-properties' version '2.2.1'
+    id 'groovy'
+    id 'pl.allegro.tech.build.axion-release' version '1.11.0'
+    id "org.owasp.dependencycheck" version "5.2.1"
+    id 'jacoco'
+    id "org.sonarqube" version "2.7"
+    id 'maven-publish'
+}
+
+group 'br.com.serasa.challenge'
+version '0.0.1'
+description 'serasa-challenge'
+sourceCompatibility = '11'
+
+apply plugin: 'groovy'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
+
+sonarqube {
+    properties {
+        property "sonar.exclusions", ['**/br/com/globo-desafio/data/config/**',
+                                      '**/br/com/globo-desafio/domain/entity/**',
+                                      '**/br/com/globo-desafio/data/client/**']
+    }
+}
+
+bootJar {
+    archiveFileName = "${project.name}.jar"
+}
+
+springBoot {
+    buildInfo()
+}
+
+apply from: rootProject.file('gradle/install-git-hooks.gradle')
+
+jacoco {
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/br/com/globo-desafio/domain/**',
+                              '**/br/com/globo-desafio/data/controller/rest/**',
+                              '**/br/com/globo-desafio/data/interfaceadapters/adapters/**'])
+        }))
+    }
+}
+
+project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+
+check.dependsOn jacocoTestReport
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+ext {
+    set('springCloudGcpVersion', "2.0.3")
+    set('springCloudVersion', "2020.0.3")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.2.5.RELEASE'
+    implementation 'io.jsonwebtoken:jjwt:0.7.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.2.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.2.5.RELEASE'
+    implementation 'org.liquibase:liquibase-core:4.4.3'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.hibernate:hibernate-c3p0:5.4.30.Final'
+    implementation 'io.swagger:swagger-annotations:1.5.23'
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    implementation 'org.apache.poi:poi:3.17'
+    implementation 'org.apache.poi:poi-ooxml:3.17'
+    implementation group: 'com.opencsv', name: 'opencsv', version: '4.0'
+    compileOnly 'com.opencsv:opencsv:4.0'
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'javax.ws.rs:javax.ws.rs-api:2.1'
+    implementation 'org.springframework.boot:spring-boot-starter-jersey:1.2.0.RELEASE'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'
+    runtimeOnly 'org.postgresql:postgresql:42.2.24.jre7'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.2.4.RELEASE'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE'
+    testImplementation 'org.springframework.security:spring-security-test:5.2.1.RELEASE'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'com.google.cloud:google-cloud-storage:2.1.9'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.5',
+            'br.com.six2six:fixture-factory:3.1.0',
+            'org.spockframework:spock-core:2.0-groovy-3.0',
+            'org.spockframework:spock-spring:2.0-groovy-3.0'
+
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+}
