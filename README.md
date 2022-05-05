@@ -1,5 +1,5 @@
 # Introduction 
-TODO: Projeto para Avalição para a vaga de Dev SR na NT Consult. 
+TODO: Projeto para Avalição para a vaga de Dev SR
 
 # Getting Started
 1. Installation process
